@@ -17,7 +17,9 @@ struct timerlib_args
 	int secs;
 	timerlib_cb *cb;
 	void *cookie;
-};
+}; 
+
+#define timerlib_defaults .secs = 0, cb = NULL, cookie = NULL 
 
 struct timerlib_ctx 
 {
@@ -33,9 +35,7 @@ struct timerlib_ctx
 	struct timerlib_args args;
 };
 
-
-#define timerlib_create(...)
-
+#define timerlib_create(...) timerlib_create_args( (struct timerlib_args) {timerlib_defaults, __VA_ARGS__ } )
 
 #if 0
 
@@ -240,9 +240,9 @@ struct timerlib_ctx *timerlib_create_args( struct timerlib_args args )
 		goto err;
 	}
 
-	ctx->secs = secs;
-	ctx->cb = cb;
-	ctx->cookie = cookie;
+	ctx->secs = args.secs;
+	ctx->cb = args.cb;
+	ctx->cookie = args.cookie;
 	
 	if(pthread_create(&ctx->thread, NULL, timerlib_timeout, ctx ))
 		goto err;
